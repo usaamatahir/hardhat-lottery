@@ -14,6 +14,13 @@ error Lottery__UpkeepNotNeeded(
     uint256 lotteryState
 );
 
+/**
+ * @title This is a sample Lottery smart contract
+ * @author Usama Tahir
+ * @notice This contract is for creating untemparable decentralized smart contract
+ * @dev This contract implements Chainlink VRF v2 and Chainlink keepers
+ */
+
 contract Lottery is VRFConsumerBaseV2, AutomationCompatibleInterface {
     // 1- Lottery
     // 2- Enter Lottery by paying some amount
@@ -149,5 +156,17 @@ contract Lottery is VRFConsumerBaseV2, AutomationCompatibleInterface {
 
     function getRecentWinner() public view returns (address) {
         return recentWinner;
+    }
+
+    function getLotteryWinner() public view returns (LotteryState) {
+        return s_lotteryState;
+    }
+
+    function getNumWords() public pure returns (uint256) {
+        return NUM_WORDS;
+    }
+
+    function getNumberOfParticipants() public view returns (uint256) {
+        return s_participants.length;
     }
 }

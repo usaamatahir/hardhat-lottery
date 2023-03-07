@@ -1,0 +1,20 @@
+import { run } from "hardhat";
+
+export const verify = async (contractAddress: string, args: any[]) => {
+  try {
+    await run("verify:verify", {
+      address: contractAddress,
+      constructorArguments: args,
+    });
+
+    console.log("----------------------------");
+    console.log("Verified Contract Successfully");
+    console.log("----------------------------");
+  } catch (e: any) {
+    if (e.message.toLowerCase().includes("already verified")) {
+      console.log("Already verified!");
+    } else {
+      console.log(e);
+    }
+  }
+};
