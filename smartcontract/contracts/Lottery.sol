@@ -118,6 +118,8 @@ contract Lottery is VRFConsumerBaseV2, AutomationCompatibleInterface {
                 uint256(s_lotteryState)
             );
         }
+        s_lotteryState = LotteryState.CALCULATING;
+
         uint256 requestId = i_vrfCoordinator.requestRandomWords(
             i_gasLane,
             i_subscriptionId,
@@ -158,7 +160,7 @@ contract Lottery is VRFConsumerBaseV2, AutomationCompatibleInterface {
         return recentWinner;
     }
 
-    function getLotteryWinner() public view returns (LotteryState) {
+    function getLotteryState() public view returns (LotteryState) {
         return s_lotteryState;
     }
 
@@ -168,5 +170,9 @@ contract Lottery is VRFConsumerBaseV2, AutomationCompatibleInterface {
 
     function getNumberOfParticipants() public view returns (uint256) {
         return s_participants.length;
+    }
+
+    function getInterval() public view returns (uint256) {
+        return i_interval;
     }
 }

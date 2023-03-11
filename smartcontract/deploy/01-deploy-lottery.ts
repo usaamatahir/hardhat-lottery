@@ -5,6 +5,7 @@ import { ethers } from "hardhat";
 import { VRFCoordinatorV2Mock } from "../typechain-types/index";
 import { verify } from "../utils/verify";
 
+let VRFCoordinatorV2MockContract: VRFCoordinatorV2Mock;
 const deployLottery: DeployFunction = async ({
   deployments,
   getNamedAccounts,
@@ -19,8 +20,9 @@ const deployLottery: DeployFunction = async ({
   let subsciptionId: any;
 
   if (developmentChains.includes(network.name)) {
-    const VRFCoordinatorV2MockContract: VRFCoordinatorV2Mock =
-      await ethers.getContract("VRFCoordinatorV2Mock");
+    VRFCoordinatorV2MockContract = await ethers.getContract(
+      "VRFCoordinatorV2Mock"
+    );
     vrfCoordinatorAddress = VRFCoordinatorV2MockContract.address;
     const transactionResponce =
       await VRFCoordinatorV2MockContract.createSubscription();
@@ -61,6 +63,11 @@ const deployLottery: DeployFunction = async ({
   log("----------------------------");
   log("Fundme deployed successfully");
   log("----------------------------");
+
+  await VRFCoordinatorV2MockContract.addConsumer(
+    subsciptionId,
+    lottery.address
+  );
 
   if (
     !developmentChains.includes(network.name) &&
