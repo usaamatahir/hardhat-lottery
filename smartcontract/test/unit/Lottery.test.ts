@@ -156,5 +156,48 @@ import { BigNumber } from "ethers";
             assert.equal(requestId, 1);
           });
         });
+
+        describe("FullfillRandomnes", () => {
+          beforeEach(async () => {
+            await lottery.enterLottery({
+              value: lotteryEntranceFee,
+            });
+            await network.provider.send("evm_increaseTime", [
+              interval.toNumber() + 1,
+            ]);
+            await network.provider.send("evm_mine", []);
+          });
+
+          it("Should only be called after performUpkeep", async () => {
+            await expect(
+              vrfCoordinatorV2.fulfillRandomWords(0, lottery.address)
+            ).to.be.revertedWith("nonexistent request");
+            await expect(
+              vrfCoordinatorV2.fulfillRandomWords(1, lottery.address)
+            ).to.be.revertedWith("nonexistent request");
+          });
+
+          it("Should pick the winner, reset the lottery and send money to winner", async () => {
+            const additionalEntrants = 4;
+            const startingAccountIndex = 1;
+            const accounts = await ethers.getSigners();
+            for (
+              let i = startingAccountIndex;
+              i < startingAccountIndex + additionalEntrants;
+              i++
+            ) {
+              const accountConnectedWithLottery = lottery.connect(accounts[i]);
+
+              await accountConnectedWithLottery.enterLottery({
+                value: lotteryEntranceFee,
+              });
+            }
+            const startingTimestamp = lottery.getLastTimestamp();
+
+            await new Promise<boolean>((resolve, reject) => {
+              lottery.once("WinnerPicked", () => {});
+            });
+          });
+        });
       });
     });
