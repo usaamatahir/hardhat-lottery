@@ -192,10 +192,51 @@ import { BigNumber } from "ethers";
                 value: lotteryEntranceFee,
               });
             }
-            const startingTimestamp = lottery.getLastTimestamp();
+            const startingTimestamp = await lottery.getLastTimestamp();
 
-            await new Promise<boolean>((resolve, reject) => {
-              lottery.once("WinnerPicked", () => {});
+            await new Promise<void>(async (resolve, reject) => {
+              lottery.once("WinnerPicked", async () => {
+                console.log("Found the winner event");
+                try {
+                  const recentWinner = await lottery.getRecentWinner();
+
+                  const lotteryState = await lottery.getLotteryState();
+                  const endingTimestamp = await lottery.getLastTimestamp();
+                  const numParticipants =
+                    await lottery.getNumberOfParticipants();
+                  const winnerEndingBalance = await accounts[1].getBalance();
+
+                  assert.equal(numParticipants.toNumber(), 0);
+                  assert.equal(lotteryState.toString(), "0");
+                  assert.equal(recentWinner, await lottery.getRecentWinner());
+                  assert(
+                    endingTimestamp.toString() > startingTimestamp.toString()
+                  );
+                  assert.equal(
+                    winnerEndingBalance.toString(),
+                    winnerStartingBalance
+                      .add(
+                        lotteryEntranceFee
+                          .mul(additionalEntrants)
+                          .add(lotteryEntranceFee)
+                      )
+                      .toString()
+                  );
+                } catch (error) {
+                  reject(error);
+                }
+                resolve();
+              });
+
+              const tx = await lottery.performUpkeep([]);
+              const txReceipt = tx.wait(1);
+              const winnerStartingBalance = await accounts[1].getBalance();
+              await vrfCoordinatorV2.fulfillRandomWords(
+                (
+                  await txReceipt
+                ).events?.[1].args?.requestId,
+                lottery.address
+              );
             });
           });
         });
