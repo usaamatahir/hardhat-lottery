@@ -39,7 +39,7 @@ const deployLottery: DeployFunction = async ({
     subsciptionId = networkConfig[chainId].subscriptionId;
   }
 
-  const entranceFee = networkConfig[chainId].entranceFee;
+  const entranceFee = networkConfig[chainId].entranceFee?.toString();
   const gasLane = networkConfig[chainId].gasLane;
   const callbackGasLimit = networkConfig[chainId].callbackGasLimit;
   const interval = networkConfig[chainId].interval;
@@ -52,26 +52,34 @@ const deployLottery: DeployFunction = async ({
     callbackGasLimit,
     interval,
   ];
+  log("----------------------------");
+  log("Fundme deploying");
+  log("----------------------------");
+
+  console.log(deployer);
+  console.log(args);
 
   const lottery = await deploy("Lottery", {
     from: deployer,
     args: args,
     log: true,
-    waitConfirmations: networkConfig[chainId].blockConfirmations || 0,
+    waitConfirmations: networkConfig[chainId].blockConfirmations || 1,
   });
 
   log("----------------------------");
   log("Fundme deployed successfully");
   log("----------------------------");
 
-  await VRFCoordinatorV2MockContract.addConsumer(
-    subsciptionId,
-    lottery.address
-  );
+  if (developmentChains.includes(network.name)) {
+    await VRFCoordinatorV2MockContract.addConsumer(
+      subsciptionId,
+      lottery.address
+    );
+  }
 
   if (
     !developmentChains.includes(network.name) &&
-    process.env.ETHERSCAN_API_KEY
+    process.env.POLYGONSCAN_API_KEY
   ) {
     log("----------------------------");
     log("Verify Conract");

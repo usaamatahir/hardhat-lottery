@@ -35,9 +35,17 @@ developmentChains.includes(network.name)
 
                 await expect(lottery.getParticipants(0)).to.be.reverted;
                 assert.equal(recentWinner.toString(), accounts[0].address);
+
+                console.log(
+                  "Winner Ending Balance: " + winnerEndingBalance.toString()
+                );
+                console.log(
+                  "Winner Starting Balance: " +
+                    winnerStartingBalance.add(lotteryEntranceFee).toString()
+                );
                 assert.equal(
-                  winnerEndingBalance,
-                  winnerStartingBalance.add(lotteryEntranceFee.toString())
+                  winnerEndingBalance.toString(),
+                  winnerStartingBalance.add(lotteryEntranceFee).toString()
                 );
                 assert(
                   endingTimestamp.toString() > startingTimestamp.toString()
@@ -49,9 +57,12 @@ developmentChains.includes(network.name)
               resolve();
             });
 
-            await lottery.enterLottery({
+            const tx = await lottery.enterLottery({
               value: lotteryEntranceFee,
             });
+
+            const { effectiveGasPrice, gasUsed } = await tx.wait(1);
+
             const winnerStartingBalance = await accounts[0].getBalance();
           });
         });
