@@ -46,8 +46,8 @@ const Lottery = () => {
   });
 
   async function handleSuccess(tx: ContractTransaction) {
-    await tx.wait(1);
-    console.log(tx);
+    const reponse = await tx.wait(1);
+    console.log(reponse);
     const getParticipantsLength = (await getNumOfParticipants()).toString();
     const recentWinner = (await getRecentWinner()).toString();
     setParticipants(getParticipantsLength);
@@ -170,45 +170,6 @@ const Lottery = () => {
                   {recentWinner.slice(recentWinner.length - 4)}
                 </p>
               </div>
-
-              {/* <div className="flex items-center">
-                <svg
-                  className="flex-shrink-0"
-                  width="20"
-                  height="24"
-                  viewBox="0 0 20 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M17 11H3C1.89543 11 1 11.8954 1 13V21C1 22.1046 1.89543 23 3 23H17C18.1046 23 19 22.1046 19 21V13C19 11.8954 18.1046 11 17 11Z"
-                    stroke="#000000"
-                    stroke-width="1.5"
-                    stroke-miterlimit="10"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M10 19C11.1046 19 12 18.1046 12 17C12 15.8954 11.1046 15 10 15C8.89543 15 8 15.8954 8 17C8 18.1046 8.89543 19 10 19Z"
-                    stroke="#000000"
-                    stroke-width="1.5"
-                    stroke-miterlimit="10"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M15 7V6C15.0131 4.68724 14.5042 3.42303 13.5853 2.48539C12.6664 1.54776 11.4128 1.01346 10.1 1H10C8.68724 0.986939 7.42303 1.4958 6.48539 2.41469C5.54776 3.33357 5.01346 4.58724 5 5.9V7"
-                    stroke="#000000"
-                    stroke-width="1.5"
-                    stroke-miterlimit="10"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-                <p className="ml-3 text-sm text-gray-900">
-                  Secured & safe online payment
-                </p>
-              </div> */}
             </div>
           </div>
         </div>

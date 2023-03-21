@@ -18,13 +18,16 @@ const updateUI: DeployFunction = async function (
     const contractAddresses = JSON.parse(
       fs.readFileSync(frontEndContractsFile, "utf-8")
     );
-    if (chainId in contractAddresses) {
+
+    console.log("Contract addresses: " + contractAddresses);
+    if (network.name === "localhost" && chainId in contractAddresses) {
       if (
-        !contractAddresses[network.config.chainId!].includes(lottery.address)
+        !contractAddresses[network.config.chainId!]?.includes(lottery.address)
       ) {
-        contractAddresses[network.config.chainId!].push(lottery.address);
+        contractAddresses[network.config.chainId!]?.push(lottery.address);
       }
     } else {
+      console.log(network.config.chainId);
       contractAddresses[network.config.chainId!] = [lottery.address];
     }
     fs.writeFileSync(frontEndContractsFile, JSON.stringify(contractAddresses));

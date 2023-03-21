@@ -19,7 +19,7 @@ interface networkConfigInfo {
 }
 
 const networkConfig: networkConfigInfo = {
-  1337: {
+  31337: {
     blockConfirmations: 0,
     entranceFee: ethers.utils.parseEther("0.01"),
     gasLane:
